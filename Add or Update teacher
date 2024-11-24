@@ -1,0 +1,27 @@
+public class Teacher {
+    private int teacherId;
+    protected String name;
+    private enum teacherStatus{
+        Alive, 
+        notAlive
+    }
+
+    private teacherStatus status;
+
+    public Teacher(int teacherId, String name, teacherStatus status){
+        this.teacherId = teacherId;
+        this.name = name;
+        this.status = status;
+    }
+
+    public void addTeacher(int teacherId, String name, teacherStatus staus){
+        Teacher teacher1 = new Teacher(teacherId, name, staus);
+    }
+
+    public void removeTeacher(int Id){
+
+    }
+
+    public void updateTeacherInfo(){
+
+    }
