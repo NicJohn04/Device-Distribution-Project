@@ -11,7 +11,7 @@ import java.util.List;
 
 
 public class MainMenuFrame extends JFrame{
-
+//Main window seen as you run the code(login page) it has the option to login as an admin or an teacher
     public MainMenuFrame(){
         setLayout(new BorderLayout());
 
@@ -21,18 +21,18 @@ public class MainMenuFrame extends JFrame{
         label.setHorizontalAlignment(JLabel.CENTER);
         add(label, BorderLayout.NORTH);
 
-        JButton adminloginButton = new JButton("Admin Login");
-        panel.add(adminloginButton);
+        JButton adminloginButton = new JButton("Admin Login"); // adds a new button to the window titled admin Login
+        panel.add(adminloginButton); // adds the button to the panel
 
-        adminloginButton.addActionListener(new ActionListener() {
+        adminloginButton.addActionListener(new ActionListener() {  // this set the action that is taken by the Admin login button
             public void actionPerformed(ActionEvent e){
-                adminlog();
+                adminlog(); // function that carries you to the main admin login option prompts you to enter password
             }
         });
 
-        JButton teacherloginButton = new JButton("Teacher Login");
-        panel.add(teacherloginButton);
-        teacherloginButton.addActionListener(new ActionListener() {
+        JButton teacherloginButton = new JButton("Teacher Login"); //adds a new button to the window titled teacher Login
+        panel.add(teacherloginButton); // adds the button to the panel
+        teacherloginButton.addActionListener(new ActionListener() {  // this set the action that is taken by the Admin login button
             public void actionPerformed(ActionEvent e) {
                 teacherlog();
             }
@@ -87,19 +87,19 @@ public class MainMenuFrame extends JFrame{
             mainFrame.setContentPane(mainPanel);
             mainFrame.setVisible(true);
 
-            JButton UsermanagementButton = new JButton("User Management");
-            JButton ReportGenButton = new JButton("Report Creation");
-            JButton InventoryButton = new JButton("Inventory Management");
+            JButton UsermanagementButton = new JButton("User Management"); // this is where you link the User Management option also allows for user controls mainly for the admin
+            JButton ReportGenButton = new JButton("Report Creation"); // this is where you link the Report creation option
+            JButton InventoryButton = new JButton("Inventory Management"); // this is where you link the Inventory  Managment
 
-            JPanel buttonPanel = new JPanel();
-            buttonPanel.add(UsermanagementButton);
-            buttonPanel.add(ReportGenButton);
-            buttonPanel.add(InventoryButton);
+            JPanel buttonPanel = new JPanel(); //Adds a new panel within the existing one this one is specifically for the buttons
+            buttonPanel.add(UsermanagementButton); //adds the button to the new panel 
+            buttonPanel.add(ReportGenButton); //adds the button to the new panel
+            buttonPanel.add(InventoryButton); //adds the button to the new panel
 
-            mainFrame.getContentPane().add(buttonPanel, BorderLayout.NORTH);
+            mainFrame.getContentPane().add(buttonPanel, BorderLayout.NORTH); // adds the button panel to the existing frame
             mainFrame.setSize(800,350);
             mainFrame.setLocationRelativeTo(null);
-            mainFrame.setVisible(true);
+            mainFrame.setVisible(true); // allow the frame to be seen
 
         } else{
             JOptionPane.showMessageDialog(adminFrame,"Ivalid password. please  try again", "Login Error", JOptionPane.ERROR_MESSAGE);
@@ -181,15 +181,15 @@ public class MainMenuFrame extends JFrame{
     }
 
 
-
+// this allows for the frame to run 
     public static void main(String[] args) {
 
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 MainMenuFrame frame = new MainMenuFrame();
                 frame.setLocationRelativeTo(null);
-                frame.setVisible(true);
-                frame.pack();
+                frame.setVisible(true); // Allows you to see the frame 
+                frame.pack(); // this fits the frame into the correct dimention
             }
         });
     }
