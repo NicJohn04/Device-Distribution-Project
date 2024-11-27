@@ -157,12 +157,13 @@ public class MainMenuFrame extends JFrame{
             mainFrame_teach.setVisible(true);
 
             JButton BookEquiButton = new JButton("Book Equipment");
-            //BookEquiButton.addActionListener(new ActionListener(){
-                //public void actionPerformed(ActionEvent e){
-                   // new Booking();
+            BookEquiButton.addActionListener(new ActionListener(){
+                public void actionPerformed(ActionEvent e){
+                    new Booking();
 
-                //}
-            //});
+                }
+            });
+            
             JButton NotifyButton = new JButton("Notification");
 
             JPanel buttonPanel_t = new JPanel();
