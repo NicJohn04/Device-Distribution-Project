@@ -1,45 +1,22 @@
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Logger;
-import java.util.logging.Level;
 
-/**
- * Represents a Teacher entity in the school laboratory management system.
- * Handles teacher information management including creation, updates, and status changes.
- */
 public class Teacher {
-    private static final Logger LOGGER = Logger.getLogger(Teacher.class.getName());
-    private static List<Teacher> teacherDatabase = new ArrayList<>();
-    
-    // Core attributes
+    // Enum for Teacher Status
+    public enum TeacherStatus {
+        ACTIVE, INACTIVE
+    }
+
+    // Teacher attributes
     private int teacherId;
     private String name;
     private String email;
     private String contactNumber;
     private String role;
     private TeacherStatus status;
-    private LocalDateTime lastUpdated;
     private LocalDateTime dateCreated;
+    private LocalDateTime lastUpdated;
 
-    /**
-     * Enumeration representing possible teacher statuses in the system
-     */
-    public enum TeacherStatus {
-        ACTIVE,
-        INACTIVE,
-        SUSPENDED,
-        RETIRED
-    }
-
-    /**
-     * Constructor for creating a new teacher instance
-     * @param teacherId Unique identifier for the teacher
-     * @param name Full name of the teacher
-     * @param email Teacher's email address
-     * @param contactNumber Teacher's contact number
-     * @param role Teacher's role in the institution
-     */
+    // Constructor function 
     public Teacher(int teacherId, String name, String email, String contactNumber, String role) {
         this.teacherId = teacherId;
         this.name = name;
@@ -51,139 +28,67 @@ public class Teacher {
         this.lastUpdated = LocalDateTime.now();
     }
 
-    // Getters and Setters
-    public int getTeacherId() { return teacherId; }
-    public String getName() { return name; }
-    public String getEmail() { return email; }
-    public String getContactNumber() { return contactNumber; }
-    public String getRole() { return role; }
-    public TeacherStatus getStatus() { return status; }
-    public LocalDateTime getLastUpdated() { return lastUpdated; }
-    public LocalDateTime getDateCreated() { return dateCreated; }
-
-    /**
-     * Adds a new teacher to the system
-     * @param teacherDetails The teacher object containing all required information
-     * @return boolean indicating success of the operation
-     */
-    public static boolean addTeacher(Teacher teacherDetails) {
-        try {
-            // Validate teacher ID uniqueness
-            if (teacherDatabase.stream().anyMatch(t -> t.getTeacherId() == teacherDetails.getTeacherId())) {
-                LOGGER.warning("Teacher ID already exists: " + teacherDetails.getTeacherId());
-                return false;
-            }
-            
-            teacherDatabase.add(teacherDetails);
-            LOGGER.info("Teacher added successfully: " + teacherDetails.getName());
-            return true;
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error adding teacher: " + e.getMessage(), e);
-            return false;
-        }
+    // Getter functions 
+    public int getTeacherId() {
+        return teacherId;
     }
 
-    /**
-     * Updates existing teacher information
-     * @param teacherId ID of the teacher to update
-     * @param name Updated name (null if no change)
-     * @param email Updated email (null if no change)
-     * @param contactNumber Updated contact number (null if no change)
-     * @param role Updated role (null if no change)
-     * @return boolean indicating success of the operation
-     */
-    public static boolean updateTeacherInfo(int teacherId, String name, String email, 
-                                          String contactNumber, String role) {
-        try {
-            Teacher teacher = findTeacherById(teacherId);
-            if (teacher == null) {
-                LOGGER.warning("Teacher not found for update: " + teacherId);
-                return false;
-            }
-
-            if (name != null) teacher.name = name;
-            if (email != null) teacher.email = email;
-            if (contactNumber != null) teacher.contactNumber = contactNumber;
-            if (role != null) teacher.role = role;
-            
-            teacher.lastUpdated = LocalDateTime.now();
-            LOGGER.info("Teacher information updated: " + teacherId);
-            return true;
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error updating teacher: " + e.getMessage(), e);
-            return false;
-        }
+    public String getName() {
+        return name;
     }
 
-    /**
-     * Changes the status of a teacher in the system
-     * @param teacherId ID of the teacher
-     * @param newStatus New status to be set
-     * @return boolean indicating success of the operation
-     */
-    public static boolean updateTeacherStatus(int teacherId, TeacherStatus newStatus) {
-        try {
-            Teacher teacher = findTeacherById(teacherId);
-            if (teacher == null) {
-                LOGGER.warning("Teacher not found for status update: " + teacherId);
-                return false;
-            }
-
-            TeacherStatus oldStatus = teacher.status;
-            teacher.status = newStatus;
-            teacher.lastUpdated = LocalDateTime.now();
-            
-            LOGGER.info(String.format("Teacher %d status changed from %s to %s", 
-                                    teacherId, oldStatus, newStatus));
-            return true;
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error updating teacher status: " + e.getMessage(), e);
-            return false;
-        }
+    public String getEmail() {
+        return email;
     }
 
-    /**
-     * Removes a teacher from the system (soft delete by setting status to INACTIVE)
-     * @param teacherId ID of the teacher to remove
-     * @return boolean indicating success of the operation
-     */
-    public static boolean removeTeacher(int teacherId) {
-        try {
-            Teacher teacher = findTeacherById(teacherId);
-            if (teacher == null) {
-                LOGGER.warning("Teacher not found for removal: " + teacherId);
-                return false;
-            }
-
-            teacher.status = TeacherStatus.INACTIVE;
-            teacher.lastUpdated = LocalDateTime.now();
-            LOGGER.info("Teacher removed (deactivated): " + teacherId);
-            return true;
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Error removing teacher: " + e.getMessage(), e);
-            return false;
-        }
+    public String getContactNumber() {
+        return contactNumber;
     }
 
-    /**
-     * Utility method to find a teacher by ID
-     * @param teacherId ID of the teacher to find
-     * @return Teacher object if found, null otherwise
-     */
-    private static Teacher findTeacherById(int teacherId) {
-        return teacherDatabase.stream()
-                .filter(t -> t.getTeacherId() == teacherId)
-                .findFirst()
-                .orElse(null);
+    public String getRole() {
+        return role;
     }
 
-    /**
-     * Returns a string representation of the Teacher object
-     * @return String containing teacher details
-     */
-    @Override
-    public String toString() {
-        return String.format("Teacher{id=%d, name='%s', email='%s', role='%s', status=%s}", 
-                           teacherId, name, email, role, status);
+    public TeacherStatus getStatus() {
+        return status;
+    }
+
+    public LocalDateTime getDateCreated() {
+        return dateCreated;
+    }
+
+    public LocalDateTime getLastUpdated() {
+        return lastUpdated;
+    }
+
+    // Setter functions
+    public void setName(String name) {
+        this.name = name;
+        updateLastUpdated();
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+        updateLastUpdated();
+    }
+
+    public void setContactNumber(String contactNumber) {
+        this.contactNumber = contactNumber;
+        updateLastUpdated();
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+        updateLastUpdated();
+    }
+
+    public void setStatus(TeacherStatus status) {
+        this.status = status;
+        updateLastUpdated();
+    }
+
+    // Helper method to update lastUpdated timestamp
+    private void updateLastUpdated() {
+        this.lastUpdated = LocalDateTime.now();
     }
 }
