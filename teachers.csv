@@ -1,2 +1,2 @@
-TeacherId,Name,Email,ContactNumber,Role,Status,DateCreated,LastUpdated
-12345678,Walter White,walterwhite@gmail.com,876-134-1341,Teacher,ACTIVE,2024-11-27 15:29:25,2024-11-27 15:29:25
+TeacherId,Name,Email,Password,ContactNumber,Role,Status,DateCreated,LastUpdated
+12345678,Walter White,walterwhite@gmail.com,terminator,876-325-1345,Teacher,ACTIVE,2024-11-28 17:14:31,2024-11-28 17:23:55

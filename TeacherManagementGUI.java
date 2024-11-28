@@ -25,12 +25,14 @@ public class TeacherManagementGUI extends JFrame {
     private JComboBox<Teacher.TeacherStatus> cmbStatus;
     private JTable teacherTable;
     private DefaultTableModel tableModel;
+    private JPasswordField passwrd;
 
     /**
      * Constructor to set up the GUI
      */
     public TeacherManagementGUI() {
         // Set up the main frame
+        //JFrame TeacherFrame =new JFrame("Teacher Management System"); //the frame of booking 
         setTitle("Teacher Management System");
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -48,8 +50,14 @@ public class TeacherManagementGUI extends JFrame {
         JPanel buttonPanel = createButtonPanel();
         add(buttonPanel, BorderLayout.SOUTH);
 
+        JPanel passwordPanel = createButtonPanel();
+        add(passwordPanel, BorderLayout.AFTER_LAST_LINE);
+
         // Initialize the table with existing teachers
         refreshTable();
+
+        setLocationRelativeTo(null); // Center the frame on the screen
+
     }
 
     /**
@@ -102,7 +110,7 @@ public class TeacherManagementGUI extends JFrame {
      * @return boolean indicating success
      */
     public static boolean updateTeacherInfo(int teacherId, String name, String email, 
-                                            String contactNumber, String role) {
+                                            String contactNumber, String role, String passwrd) {
         Teacher teacher = findTeacherById(teacherId);
         if (teacher == null) return false;
 
@@ -110,6 +118,7 @@ public class TeacherManagementGUI extends JFrame {
         if (email != null) teacher.setEmail(email);
         if (contactNumber != null) teacher.setContactNumber(contactNumber);
         if (role != null) teacher.setRole(role);
+        if (passwrd != null) teacher.setPassword(passwrd);
         
         return true;
     }
@@ -121,7 +130,7 @@ public class TeacherManagementGUI extends JFrame {
      * Create input panel (same as previous implementation)
      */
     private JPanel createInputPanel() {
-        JPanel inputPanel = new JPanel(new GridLayout(6, 2, 10, 10));
+        JPanel inputPanel = new JPanel(new GridLayout(7, 2, 10, 10));
         inputPanel.setBorder(BorderFactory.createTitledBorder("Teacher Information"));
     
         // Teacher ID
@@ -138,6 +147,11 @@ public class TeacherManagementGUI extends JFrame {
         inputPanel.add(new JLabel("Email:"));
         txtEmail = new JTextField();
         inputPanel.add(txtEmail);
+
+        //Password
+        inputPanel.add(new JLabel("Password: "));
+        passwrd = new JPasswordField();
+        inputPanel.add(passwrd);
     
         // Contact Number
         inputPanel.add(new JLabel("Contact Number:"));
@@ -165,7 +179,7 @@ public class TeacherManagementGUI extends JFrame {
         JPanel tablePanel = new JPanel(new BorderLayout());
     
         // Define column names
-        String[] columnNames = {"ID", "Name", "Email", "Contact", "Role", "Status", "Date Created", "Last Updated"};
+        String[] columnNames = {"ID", "Name", "Email", "Password", "Contact", "Role", "Status", "Date Created", "Last Updated"};
     
         // Create table model
         tableModel = new DefaultTableModel(columnNames, 0);
@@ -234,14 +248,16 @@ public class TeacherManagementGUI extends JFrame {
             int teacherId = Integer.parseInt(txtTeacherId.getText());
             String name = txtName.getText();
             String email = txtEmail.getText();
+            String password = new String(passwrd.getPassword());
             String contactNumber = txtContactNumber.getText();
             String role = txtRole.getText();
 
-            Teacher newTeacher = new Teacher(teacherId, name, email, contactNumber, role);
+            Teacher newTeacher = new Teacher(teacherId, name, email, contactNumber, role, password);
             
             if (addTeacher(newTeacher)) {
                 JOptionPane.showMessageDialog(this, "Teacher added successfully!", 
                                               "Success", JOptionPane.INFORMATION_MESSAGE);
+                TeacherFileManager.saveTeachersToFile(teacherDatabase);
                 refreshTable();
                 clearInputFields();
             } else {
@@ -266,15 +282,22 @@ public class TeacherManagementGUI extends JFrame {
             int teacherId = Integer.parseInt(txtTeacherId.getText());
             String name = txtName.getText();
             String email = txtEmail.getText();
+            String password = new String(passwrd.getPassword());
             String contactNumber = txtContactNumber.getText();
             String role = txtRole.getText();
+            
             Teacher.TeacherStatus status = (Teacher.TeacherStatus) cmbStatus.getSelectedItem();
 
             Teacher teacher = findTeacherById(teacherId);
             if (teacher != null) {
-                updateTeacherInfo(teacherId, name, email, contactNumber, role);
+                updateTeacherInfo(teacherId, name, email, contactNumber, role, password);
                 teacher.setStatus(status);
+
+                if (!password.isEmpty()){
+                    teacher.changePassword(password);
+                }
                 
+                TeacherFileManager.saveTeachersToFile(teacherDatabase);
                 JOptionPane.showMessageDialog(this, "Teacher updated successfully!", 
                                               "Success", JOptionPane.INFORMATION_MESSAGE);
                 refreshTable();
@@ -301,6 +324,7 @@ public class TeacherManagementGUI extends JFrame {
             int teacherId = Integer.parseInt(txtTeacherId.getText());
 
             if (removeTeacher(teacherId)) {
+                TeacherFileManager.saveTeachersToFile(teacherDatabase);
                 JOptionPane.showMessageDialog(this, "Teacher removed successfully!", 
                                               "Success", JOptionPane.INFORMATION_MESSAGE);
                 refreshTable();
@@ -335,6 +359,7 @@ public class TeacherManagementGUI extends JFrame {
             row.add(teacher.getTeacherId());
             row.add(teacher.getName());
             row.add(teacher.getEmail());
+            row.add(teacher.getPasswordHash());
             row.add(teacher.getContactNumber());
             row.add(teacher.getRole());
             row.add(teacher.getStatus());
@@ -352,13 +377,15 @@ public class TeacherManagementGUI extends JFrame {
         txtTeacherId.setText("");
         txtName.setText("");
         txtEmail.setText("");
+        passwrd.setText("");
         txtContactNumber.setText("");
         txtRole.setText("");
+        passwrd.setText("");
         cmbStatus.setSelectedItem(Teacher.TeacherStatus.ACTIVE);
     }
 
 
-
+ 
 
 
 // Modify the main method to save teachers when the application exits
@@ -373,8 +400,9 @@ public static void main(String[] args) {
         }
 
         // Create and show the application
-        TeacherManagementGUI app = new TeacherManagementGUI();
-        app.setVisible(true);
+        JFrame TeacherManagementFrame = new TeacherManagementGUI();
+        TeacherManagementFrame.setVisible(true);
+        
 
         // Add shutdown hook to save teachers when application closes
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
