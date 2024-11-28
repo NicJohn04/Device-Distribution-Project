@@ -4,10 +4,13 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.List;
 
@@ -17,17 +20,20 @@ public class Booking extends JFrame {
     private JTable Bookingtable;
     private JTextField tbookedField;
     private JTextField timeBookedField;
+    private String teacherEmail;
 
 
-    public Booking(){
+    public Booking(String teacherEmail){
+        this.teacherEmail = teacherEmail;
+
         JFrame BookingFrame =new JFrame("Book Equipment"); //the frame of booking 
         BookingFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // seting the frame to close once you click on close
         BookingFrame.setLocationRelativeTo(null);
         BookingFrame.setLayout(new BorderLayout());
 
-        String[] columnNames = {"Select", "Equipment ID", "Equipment Name", "Serial Number", "Status", "Description", "Bookin Time"}; // column names for the table
+        String[] columnNames = {"Select", "Equipment ID", "Equipment Name", "Serial Number", "Status", "Description", "Bookin Time", "Booking Status"}; // column names for the table
 
-        Object[][] data = loadDataFromFile("C:\\Users\\starg\\Downloads\\SoftwareProject\\Equipment.dat"); //load data from file to store in a veriable which builds the table
+        Object[][] data = loadDataFromFile("C:\\Users\\starg\\Documents\\Device-Distribution-Project-main\\Java Project\\src\\Equipment.dat"); //load data from file to store in a veriable which builds the table
 
         Object[][] dataWithCheckbox = new Object[data.length][data[0].length + 1]; //add the check box column 
         for(int i = 0; i< data.length; i++){
@@ -61,8 +67,23 @@ public class Booking extends JFrame {
 
                 String timebookedfor = tbookedField.getText();
                 String bookdurartion = timeBookedField.getText();
+                int selectedb = Bookingtable.getSelectedRow();
+
+                if(selectedb != -1){
+                    DefaultTableModel model = (DefaultTableModel) Bookingtable.getModel();
+                    String bookstat = (String) model.getValueAt(selectedb, 7);
+
+                    if("Booked".equals(bookstat)){ //check if the column is already booked
+                        JOptionPane.showMessageDialog(null, "Booking not possible");
+                    }
+
+                    model.setValueAt("Booked", selectedb, 7);
+                    
+                }
+                
 
                 if(timebookedfor.isEmpty() && bookdurartion.isEmpty()){
+                    
                     JOptionPane.showMessageDialog(BookingFrame, "Please Enter a booking time", "Error", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
@@ -79,17 +100,17 @@ public class Booking extends JFrame {
                             String descript = (String) model.getValueAt(i, 5);
                             String bookTime = (String) model.getValueAt(i, 6);
 
-                            //updateToFile("C:\\Users\\starg\\Downloads\\SoftwareProject\\Equipment.dat");
+                            //updateToFile("C:\\Users\\starg\\Downloads\\Device-Distribution-Project-main\\Java Project\\src\\BookedEquipment.dat");
 
-                            try(BufferedWriter writetoFile = new BufferedWriter(new FileWriter("C:\\Users\\starg\\Downloads\\SoftwareProject\\BookedEquipment.dat", true))){
-                                writetoFile.write(equipID +","+ equipNam +","+serialNum +","+ status +","+ descript + "," + bookTime);
+                            try(BufferedWriter writetoFile = new BufferedWriter(new FileWriter("C:\\Users\\starg\\Documents\\Device-Distribution-Project-main\\Java Project\\src\\BookedEquipment.dat", true))){
+                                writetoFile.write(equipID +","+ equipNam +","+serialNum +","+ status +","+ descript + "," + bookTime + ","+ teacherEmail);
                                 writetoFile.newLine();
 
                             }
 
-                            model.removeRow(i);
+                            //model.removeRow(i);
 
-                            updateToFile("C:\\Users\\starg\\Downloads\\SoftwareProject\\Equipment.dat");
+                            updateToFile("C:\\Users\\starg\\Documents\\Device-Distribution-Project-main\\Java Project\\src\\Equipment.dat");
 
                         } catch (IOException ep) {
                             ep.printStackTrace();
@@ -115,14 +136,101 @@ public class Booking extends JFrame {
         JButton closebutton = new JButton("Close"); //declaring close button
         closebutton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
+                try{
+                    updateToFile("C:\\Users\\starg\\Documents\\Device-Distribution-Project-main\\Java Project\\src\\Equipment.dat");
+                }catch(IOException ep){
+                    ep.printStackTrace();
+                }
+                
                 BookingFrame.setVisible(false); // setting visablity to false making the not visiable
             }
         });
 
+        JButton editButton = new JButton("Edit");
+        editButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e){
+                int isselected = Bookingtable.getSelectedRow();
+                if(isselected != -1){
+                    DefaultTableModel model = (DefaultTableModel) Bookingtable.getModel();
+
+                    model.setValueAt(null, isselected, 6);
+                    
+                    JOptionPane.showMessageDialog(BookingFrame, "Equipment Sucessfullt edited");
+                }else{
+                    JOptionPane.showMessageDialog(BookingFrame, "Select the equipment data you want to edit", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+
+
+            }
+        });
+
+        JButton delButton = new JButton("Delete Booking");
+        delButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent b){
+                int selectrow = Bookingtable.getSelectedRow();
+                if(selectrow != -1){
+                    DefaultTableModel model = (DefaultTableModel) Bookingtable.getModel();
+                    String equipID = (String) model.getValueAt(selectrow, 1); //getting data from the table model
+                    String equipNam = (String) model.getValueAt(selectrow, 2);
+                    String serialNum = (String) model.getValueAt(selectrow, 3);
+                    String status = (String) model.getValueAt(selectrow, 4);
+                    String descript = (String) model.getValueAt(selectrow, 5);
+                    String bookTime = (String) model.getValueAt(selectrow, 6);
+
+                    String Bdata = equipID +","+ equipNam +","+serialNum +","+ status +","+ descript + "," + bookTime + ","+ teacherEmail; //formating the data so that it matches how its saved in the file
+
+                    try {
+                        File check = new File("C:\\Users\\starg\\Documents\\Device-Distribution-Project-main\\Java Project\\src\\BookedEquipment.dat");
+                        List<String> lines = Files.readAllLines(check.toPath()); //read all lined from the file
+
+                        boolean isfound = false;
+
+                        List<String> newLines = new ArrayList<>(); //list used to store data that will not be deleted
+
+                        //iterate through the lines to find the matching lines as selected
+                        for(String line:lines){
+                            if(!line.equals(Bdata)){
+                                newLines.add(line); //keep the lines that doesnt match and saves them into the array
+                            }else{
+                                isfound = true;
+                            }
+                        }
+                        
+                        //update the file when th selected booking data was found
+                        if(isfound){
+                            Files.write(check.toPath(), newLines, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
+                            JOptionPane.showMessageDialog(BookingFrame, "Booking deleted successful");
+
+                            model.setValueAt(null, selectrow, 7);
+
+                            updateToFile("C:\\Users\\starg\\Documents\\Device-Distribution-Project-main\\Java Project\\src\\Equipment.dat");
+                        }else{
+                            JOptionPane.showMessageDialog(null, "Booking not found in the file");
+                        }
+
+
+
+                    } catch (Exception ej) {
+                        ej.printStackTrace();
+                        JOptionPane.showMessageDialog(null, "Please select the booking you would like to delete");
+                    }
+
+
+                }
+                
+                
+            }
+        });
+
+
+
+
         //adding the button to the panel
         buttonPanel.add(AbTime); 
         buttonPanel.add(bookButton);
+        buttonPanel.add(editButton);
         buttonPanel.add(closebutton);
+        buttonPanel.add(delButton);
 
         BookingFrame.add(buttonPanel, BorderLayout.SOUTH);//adding the button planel to the frame and putting it at the bottom/south
 
@@ -143,8 +251,10 @@ public class Booking extends JFrame {
             String status = (String) model.getValueAt(i, 4);
             String descript = (String) model.getValueAt(i, 5);
             String bookTime = (String) model.getValueAt(i, 6);
+            String bookstat = (String) model.getValueAt(i, 7);
 
-            allData.add(new String[]{equipID, equipNam, serialNum, status, descript, bookTime}); //adding the data to the arrayList
+
+            allData.add(new String[]{equipID, equipNam, serialNum, status, descript, bookTime, bookstat}); //adding the data to the arrayList
         }
         //Rewriting the infromation for the table with the updated data
         try(BufferedWriter writer = new BufferedWriter(new FileWriter(filename))){
@@ -209,7 +319,7 @@ public class Booking extends JFrame {
                 int selectRow = Bookingtable.getSelectedRow();
                 if(selectRow != -1){
                     DefaultTableModel model = (DefaultTableModel) Bookingtable.getModel();
-                    model.setValueAt(timebooked + "," + durartion, selectRow, 6);
+                    model.setValueAt(timebooked + " " + durartion, selectRow, 6);
 
                     JOptionPane.showMessageDialog(adFrame, "Booking Time Saved:" + timebooked +  "," + durartion);
                     adFrame.dispose();
