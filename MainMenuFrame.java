@@ -198,11 +198,11 @@ public class MainMenuFrame extends JFrame{
                 }
             });
             
-            JButton NotifyButton = new JButton("Notification");
+            //JButton NotifyButton = new JButton("Notification");
 
             JPanel buttonPanel_t = new JPanel();
             buttonPanel_t.add(BookEquiButton);
-            buttonPanel_t.add(NotifyButton);
+            //buttonPanel_t.add(NotifyButton);
 
            
             mainFrame_teach.getContentPane().add(buttonPanel_t, BorderLayout.NORTH);
