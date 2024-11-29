@@ -18,7 +18,7 @@ public class DatePickerDialog extends JDialog {
         
         // Create input panel
         JPanel inputPanel = new JPanel(new FlowLayout());
-        inputPanel.add(new JLabel("Enter Date (yyyy-MM-dd):"));
+        inputPanel.add(new JLabel("Enter Date (dd-MM-yyyy):"));
         dateField = new JTextField(10);
         inputPanel.add(dateField);
         
@@ -49,13 +49,13 @@ public class DatePickerDialog extends JDialog {
         try {
             // Parse the date using ISO format
             selectedDate = LocalDate.parse(dateField.getText().trim(), 
-                DateTimeFormatter.ISO_LOCAL_DATE);
+                DateTimeFormatter.ofPattern("dd-MM-yyyy"));
             confirmed = true;
             dispose();
         } catch (DateTimeParseException ex) {
             // Show error message if date is invalid
             JOptionPane.showMessageDialog(this, 
-                "Invalid date format. Please use yyyy-MM-dd format.", 
+                "Invalid date format. Please use dd-MM-yyyy format.", 
                 "Date Format Error", 
                 JOptionPane.ERROR_MESSAGE);
         }

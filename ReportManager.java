@@ -47,7 +47,7 @@ public class ReportManager extends JFrame {
 
     private Map<String, String> loadTeachers() {
         Map<String, String> teachers = new HashMap<>();
-        try (BufferedReader br = new BufferedReader(new FileReader("C:\\Users\\hriet\\OneDrive - The University of the West Indies, Mona Campus\\Documents\\School work\\UWI COURSES\\COMP2140\\Device-Distribution-Project-main latest version\\Device-Distribution-Project-main\\Java Software Project\\src\\teachers.csv"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader("C://Users//daena//Downloads//Device-Distribution-Project-main latest version//Device-Distribution-Project-main latest version//Device-Distribution-Project-main//Java Software Project//src//teachers.csv"))) {
             // Skip header
             String line = br.readLine();
             
@@ -69,7 +69,7 @@ public class ReportManager extends JFrame {
 
     private List<Booking> loadBookings() {
         List<Booking> bookings = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader("C:\\Users\\hriet\\OneDrive - The University of the West Indies, Mona Campus\\Documents\\School work\\UWI COURSES\\COMP2140\\Device-Distribution-Project-main latest version\\Device-Distribution-Project-main\\Java Software Project\\src\\BookedEquipment.dat"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader("C://Users//daena//Downloads//Device-Distribution-Project-main latest version//Device-Distribution-Project-main latest version//Device-Distribution-Project-main//Java Software Project//src//BookedEquipment.dat"))) {
             // Skip header if exists
             String line;
             while ((line = br.readLine()) != null) {
@@ -113,7 +113,7 @@ public class ReportManager extends JFrame {
         for (Booking booking : filteredBookings) {
             // Look up teacher name by email
             String teacherName = booking.getEmail() != null 
-                ? teacherMap.getOrDefault(booking.getEmail(), "Unknown") 
+                ? booking.getEmail()
                 : "Unknown";
 
             tableModel.addRow(new Object[]{

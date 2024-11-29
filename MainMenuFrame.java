@@ -198,11 +198,11 @@ public class MainMenuFrame extends JFrame{
                 }
             });
             
-            //JButton NotifyButton = new JButton("Notification");
+           // JButton NotifyButton = new JButton("Notification");
 
             JPanel buttonPanel_t = new JPanel();
             buttonPanel_t.add(BookEquiButton);
-            //buttonPanel_t.add(NotifyButton);
+           // buttonPanel_t.add(NotifyButton);
 
            
             mainFrame_teach.getContentPane().add(buttonPanel_t, BorderLayout.NORTH);
@@ -219,7 +219,7 @@ public class MainMenuFrame extends JFrame{
 
 
     private static boolean fileCheck(String mail)throws IOException{
-        try (FileReader fileChecker = new FileReader("C:\\Users\\hriet\\OneDrive - The University of the West Indies, Mona Campus\\Documents\\School work\\UWI COURSES\\COMP2140\\Device-Distribution-Project-main latest version\\Device-Distribution-Project-main\\Java Software Project\\src\\teachers.csv");
+        try (FileReader fileChecker = new FileReader("C://Users//daena//Downloads//Device-Distribution-Project-main latest version//Device-Distribution-Project-main latest version//Device-Distribution-Project-main//Java Software Project//src//teachers.csv");
         BufferedReader fileReader = new BufferedReader(fileChecker)){
             String readFile = fileReader.readLine();
             while (readFile != null) {

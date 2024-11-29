@@ -61,7 +61,7 @@ public class Teacher implements Serializable {
             MessageDigest msgdgt = MessageDigest.getInstance("SHA-256");
             byte[] hasedBytes = msgdgt.digest(password.getBytes());
             return Base64.getEncoder().encodeToString(hasedBytes);
-            //return password;
+            //return password.
         }
         catch (Exception e){
             return String.valueOf(password.hashCode());

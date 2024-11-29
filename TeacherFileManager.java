@@ -11,8 +11,8 @@ public class TeacherFileManager {
     private static final Logger LOGGER = Logger.getLogger(TeacherFileManager.class.getName());
     // File to save the inventory data
     //private static final String FILE_PATH = "teachers.csv";
-    private static final String FILE_PATH = "C:\\Users\\hriet\\OneDrive - The University of the West Indies, Mona Campus\\Documents\\School work\\UWI COURSES\\COMP2140\\Device-Distribution-Project-main latest version\\Device-Distribution-Project-main\\Java Software Project\\src\\teachers.csv";
-    private static final String DAT_FILE_PATH = "C:\\Users\\hriet\\OneDrive - The University of the West Indies, Mona Campus\\Documents\\School work\\UWI COURSES\\COMP2140\\Device-Distribution-Project-main latest version\\Device-Distribution-Project-main\\Java Software Project\\src\\teachers.dat";
+    private static final String FILE_PATH = "C:/Users/daena/Downloads/Device-Distribution-Project-main latest version/Device-Distribution-Project-main latest version/Device-Distribution-Project-main/Java Software Project/src/teachers.csv";
+    private static final String DAT_FILE_PATH = "C://Users//daena//Downloads//Device-Distribution-Project-main latest version//Device-Distribution-Project-main latest version//Device-Distribution-Project-main//Java Software Project//src//teachers.dat";
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -68,7 +68,7 @@ public class TeacherFileManager {
         
         // If file doesn't exist, return empty list
         if (!file.exists()) {
-            return teachers; //returns empty teacher list.
+            return teachers;
         }
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {

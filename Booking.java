@@ -26,6 +26,9 @@ public class Booking extends JFrame {
     public Booking(String teacherEmail){
         this.teacherEmail = teacherEmail;
 
+        final String FILE_PATH_1 = "C://Users//daena//Downloads//Device-Distribution-Project-main latest version//Device-Distribution-Project-main latest version//Device-Distribution-Project-main//Java Software Project//src//Equipment.dat";
+        final String FILE_PATH_2 = "C://Users//daena//Downloads//Device-Distribution-Project-main latest version//Device-Distribution-Project-main latest version//Device-Distribution-Project-main//Java Software Project//src//BookedEquipment.dat";
+
         JFrame BookingFrame =new JFrame("Book Equipment"); //the frame of booking 
         BookingFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // seting the frame to close once you click on close
         BookingFrame.setLocationRelativeTo(null);
@@ -33,7 +36,7 @@ public class Booking extends JFrame {
 
         String[] columnNames = {"Select", "Equipment ID", "Equipment Name", "Serial Number", "Status", "Description", "Bookin Time", "Booking Status"}; // column names for the table
 
-        Object[][] data = loadDataFromFile("C:\\Users\\hriet\\OneDrive - The University of the West Indies, Mona Campus\\Documents\\School work\\UWI COURSES\\COMP2140\\Device-Distribution-Project-main latest version\\Device-Distribution-Project-main\\Java Software Project\\src\\Equipment.dat"); //load data from file to store in a veriable which builds the table
+        Object[][] data = loadDataFromFile(FILE_PATH_1); //load data from file to store in a veriable which builds the table
 
         Object[][] dataWithCheckbox = new Object[data.length][data[0].length + 1]; //add the check box column 
         for(int i = 0; i< data.length; i++){
@@ -102,7 +105,7 @@ public class Booking extends JFrame {
 
                             //updateToFile("C:\\Users\\starg\\Downloads\\Device-Distribution-Project-main\\Java Project\\src\\BookedEquipment.dat");
 
-                            try(BufferedWriter writetoFile = new BufferedWriter(new FileWriter("C:\\Users\\hriet\\OneDrive - The University of the West Indies, Mona Campus\\Documents\\School work\\UWI COURSES\\COMP2140\\Device-Distribution-Project-main latest version\\Device-Distribution-Project-main\\Java Software Project\\src\\BookedEquipment.dat", true))){
+                            try(BufferedWriter writetoFile = new BufferedWriter(new FileWriter(FILE_PATH_2, true))){
                                 writetoFile.write(equipID +","+ equipNam +","+serialNum +","+ status +","+ descript + "," + bookTime + ","+ teacherEmail);
                                 writetoFile.newLine();
 
@@ -110,7 +113,7 @@ public class Booking extends JFrame {
 
                             //model.removeRow(i);
 
-                            updateToFile("C:\\Users\\hriet\\OneDrive - The University of the West Indies, Mona Campus\\Documents\\School work\\UWI COURSES\\COMP2140\\Device-Distribution-Project-main latest version\\Device-Distribution-Project-main\\Java Software Project\\src\\Equipment.dat");
+                            updateToFile(FILE_PATH_1);
 
                         } catch (IOException ep) {
                             ep.printStackTrace();
@@ -137,7 +140,7 @@ public class Booking extends JFrame {
         closebutton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
                 try{
-                    updateToFile("C:\\Users\\starg\\Downloads\\Device-Distribution-Project-main latest-version1.1\\Java Software Project\\src\\Equipment.dat");
+                    updateToFile(FILE_PATH_1);
                 }catch(IOException ep){
                     ep.printStackTrace();
                 }
@@ -180,7 +183,7 @@ public class Booking extends JFrame {
                     String Bdata = equipID +","+ equipNam +","+serialNum +","+ status +","+ descript + "," + bookTime + ","+ teacherEmail; //formating the data so that it matches how its saved in the file
 
                     try {
-                        File check = new File("C:\\Users\\hriet\\OneDrive - The University of the West Indies, Mona Campus\\Documents\\School work\\UWI COURSES\\COMP2140\\Device-Distribution-Project-main latest version\\Device-Distribution-Project-main\\Java Software Project\\src\\BookedEquipment.dat");
+                        File check = new File(FILE_PATH_2);
                         List<String> lines = Files.readAllLines(check.toPath()); //read all lined from the file
 
                         boolean isfound = false;
@@ -203,7 +206,7 @@ public class Booking extends JFrame {
 
                             model.setValueAt(null, selectrow, 7);
 
-                            updateToFile("C:\\Users\\hriet\\OneDrive - The University of the West Indies, Mona Campus\\Documents\\School work\\UWI COURSES\\COMP2140\\Device-Distribution-Project-main latest version\\Device-Distribution-Project-main\\Java Software Project\\src\\Equipment.dat");
+                            updateToFile(FILE_PATH_1);
                         }else{
                             JOptionPane.showMessageDialog(null, "Booking not found in the file");
                         }
@@ -310,6 +313,7 @@ public class Booking extends JFrame {
             public void actionPerformed(ActionEvent e){
                 String timebooked = tbookedField.getText();
                 String durartion = timeBookedField.getText();
+                emailNotify.scheduleEmailFromDuration(teacherEmail, durartion);
 
                 if(timebooked.isEmpty() && durartion.isEmpty()){
                     JOptionPane.showMessageDialog(adFrame, "Please Enter a booking time and duration", "Error", JOptionPane.ERROR_MESSAGE);
