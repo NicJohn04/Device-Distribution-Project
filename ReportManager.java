@@ -47,7 +47,7 @@ public class ReportManager extends JFrame {
 
     private Map<String, String> loadTeachers() {
         Map<String, String> teachers = new HashMap<>();
-        try (BufferedReader br = new BufferedReader(new FileReader("C://Users//daena//Downloads//Device-Distribution-Project-main latest version//Device-Distribution-Project-main latest version//Device-Distribution-Project-main//Java Software Project//src//teachers.csv"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader("teachers.csv"))) {
             // Skip header
             String line = br.readLine();
             
@@ -69,7 +69,7 @@ public class ReportManager extends JFrame {
 
     private List<Booking> loadBookings() {
         List<Booking> bookings = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader("C://Users//daena//Downloads//Device-Distribution-Project-main latest version//Device-Distribution-Project-main latest version//Device-Distribution-Project-main//Java Software Project//src//BookedEquipment.dat"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader("BookedEquipment.dat"))) {
             // Skip header if exists
             String line;
             while ((line = br.readLine()) != null) {
@@ -82,7 +82,7 @@ public class ReportManager extends JFrame {
                         parts[2],  // Serial Number
                         LocalDate.now(),  // Default date, replace with actual date from file
                         LocalDate.now().plusDays(1),  // Default return date
-                        ""  // Email - you may need to add this to your data file
+                        parts[6]  // Email - you may need to add this to your data file
                     );
                     bookings.add(booking);
                 }
@@ -112,9 +112,9 @@ public class ReportManager extends JFrame {
         // Populate table with filtered bookings
         for (Booking booking : filteredBookings) {
             // Look up teacher name by email
-            String teacherName = booking.getEmail() != null 
-                ? booking.getEmail()
-                : "Unknown";
+            //String teacherName = booking.getEmail() != null 
+            //    ? teacherMap.getOrDefault(booking.getEmail(), "Unknown") 
+            //    : "Unknown";
 
             tableModel.addRow(new Object[]{
                 booking.getDeviceId(),
@@ -122,7 +122,7 @@ public class ReportManager extends JFrame {
                 booking.getSerialNumber(),
                 booking.getDateBooked().format(DateTimeFormatter.ISO_LOCAL_DATE),
                 booking.getReturnDate().format(DateTimeFormatter.ISO_LOCAL_DATE),
-                teacherName
+                booking.getEmail()
             });
         }
 
@@ -204,9 +204,9 @@ public class ReportManager extends JFrame {
         // Add filtered bookings to table
         for (Booking booking : bookings) {
             // Look up teacher name by email
-            String teacherName = booking.getEmail() != null 
-                ? teacherMap.getOrDefault(booking.getEmail(), "Unknown") 
-                : "Unknown";
+            //String teacherName = booking.getEmail() != null 
+            //    ? teacherMap.getOrDefault(booking.getEmail(), "Unknown") 
+            //    : "Unknown";
 
             tableModel.addRow(new Object[]{
                 booking.getDeviceId(),
@@ -214,7 +214,7 @@ public class ReportManager extends JFrame {
                 booking.getSerialNumber(),
                 booking.getDateBooked().format(DateTimeFormatter.ISO_LOCAL_DATE),
                 booking.getReturnDate().format(DateTimeFormatter.ISO_LOCAL_DATE),
-                teacherName
+                booking.getEmail()
             });
         }
     }
@@ -236,9 +236,9 @@ public class ReportManager extends JFrame {
                 // Write booking data
                 for (Booking booking : filteredBookings) {
                     // Look up teacher name by email
-                    String teacherName = booking.getEmail() != null 
-                        ? teacherMap.getOrDefault(booking.getEmail(), "Unknown") 
-                        : "Unknown";
+                    //String teacherName = booking.getEmail() != null 
+                    //    ? teacherMap.getOrDefault(booking.getEmail(), "Unknown") 
+                    //    : "Unknown";
 
                     writer.write(String.format("%s,%s,%s,%s,%s,%s", 
                         booking.getDeviceId(),
@@ -246,7 +246,7 @@ public class ReportManager extends JFrame {
                         booking.getSerialNumber(),
                         booking.getDateBooked().format(DateTimeFormatter.ISO_LOCAL_DATE),
                         booking.getReturnDate().format(DateTimeFormatter.ISO_LOCAL_DATE),
-                        teacherName
+                        booking.getEmail()
                     ));
                     writer.newLine();
                 }
@@ -271,16 +271,18 @@ public class ReportManager extends JFrame {
         private String serialNumber;
         private LocalDate dateBooked;
         private LocalDate returnDate;
-        private String email;
+        //private String email;
+        private String name;
 
         public Booking(String deviceId, String deviceType, String serialNumber, 
-                       LocalDate dateBooked, LocalDate returnDate, String email) {
+                        LocalDate dateBooked, LocalDate returnDate, String name) {
             this.deviceId = deviceId;
             this.deviceType = deviceType;
             this.serialNumber = serialNumber;
             this.dateBooked = dateBooked;
             this.returnDate = returnDate;
-            this.email = email;
+            //this.email = email;
+            this.name = name;
         }
 
         // Getters
@@ -289,8 +291,8 @@ public class ReportManager extends JFrame {
         public String getSerialNumber() { return serialNumber; }
         public LocalDate getDateBooked() { return dateBooked; }
         public LocalDate getReturnDate() { return returnDate; }
-        public String getEmail() { return email; }
-        //public String getName() {return name;}
+        //public String getEmail() { return email; }
+        public String getEmail() {return name;}
     }
 
     // Main method to launch the ReportManager
