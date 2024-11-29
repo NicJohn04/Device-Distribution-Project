@@ -1,5 +1,10 @@
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -8,217 +13,296 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
 public class ReportManager extends JFrame {
-    private static final long serialVersionUID = 1L;
-
-    private List<ReportManager> reports;
-    private Map<String, String> personMap;
+    private List<Booking> allBookings;
+    private List<Booking> filteredBookings;
     private DefaultTableModel tableModel;
+    private JComboBox<String> deviceTypeComboBox;
+    private Map<String, String> teacherMap;
 
-    public ReportManager() {
-        setTitle("Booking Manager");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1000, 500);
+    public ReportManager(LocalDate startDate, LocalDate endDate) {
+        // Frame setup
+        setTitle("Booking Report Manager");
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setSize(1200, 600);
         setLocationRelativeTo(null);
 
-        readBookingsFile("BookedEquipment.dat");
-        readPeopleFile("teachers.csv");
+        // Load teacher information
+        teacherMap = loadTeachers();
 
-        createAndDisplayTable();
-        createFilteringControls();
+        // Load bookings
+        allBookings = loadBookings();
+        
+        // Filter bookings by date range
+        filteredBookings = filterBookingsByDateRange(startDate, endDate);
+
+        // Create UI components
+        createTablePanel();
+        createControlPanel();
+        createButtonPanel();
     }
 
-    private void readBookingsFile(String filename) {
-        booked = new ArrayList<>();
-
-        try (java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader(filename))) {
-            String line;
-            br.readLine(); // Skip header row
-
+    private Map<String, String> loadTeachers() {
+        Map<String, String> teachers = new HashMap<>();
+        try (BufferedReader br = new BufferedReader(new FileReader("C:\\Users\\hriet\\OneDrive - The University of the West Indies, Mona Campus\\Documents\\School work\\UWI COURSES\\COMP2140\\Device-Distribution-Project-main latest version\\Device-Distribution-Project-main\\Java Software Project\\src\\teachers.csv"))) {
+            // Skip header
+            String line = br.readLine();
+            
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(",");
-                String deviceId = parts[0];
-                String deviceType = parts[1];
-                String deviceSerialNum = parts[2];
-                LocalDate dateBooked = LocalDate.parse(parts[5], DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-                LocalDate returnDate = LocalDate.parse(parts[6], DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-                String email = parts[7];
-                
-                booked.add(new ReportManager(email, deviceId, deviceType, deviceSerialNum, dateBooked, returnDate));
+                if (parts.length >= 3) {
+                    // Map email to name
+                    teachers.put(parts[2].trim(), parts[1].trim());
+                }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, 
+                "Error reading teachers file: " + e.getMessage(), 
+                "File Error", 
+                JOptionPane.ERROR_MESSAGE);
         }
+        return teachers;
     }
 
-    private void readPeopleFile(String filename) {
-        //personMap = new HashMap<>();
-
-        teach = new ArrayList<>();
-
-        try (java.io.BufferedReader br = new java.io.BufferedReader(new java.io.FileReader(filename))) {
+    private List<Booking> loadBookings() {
+        List<Booking> bookings = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader("C:\\Users\\hriet\\OneDrive - The University of the West Indies, Mona Campus\\Documents\\School work\\UWI COURSES\\COMP2140\\Device-Distribution-Project-main latest version\\Device-Distribution-Project-main\\Java Software Project\\src\\BookedEquipment.dat"))) {
+            // Skip header if exists
             String line;
-            br.readLine(); // Skip header row
-
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(",");
-                String name = parts[1];
-                String email = parts[2];
-                teach.add(new TeacherRecord(name, email));
+                if (parts.length >= 7) {
+                    // Adjust parsing based on actual file format
+                    Booking booking = new Booking(
+                        parts[0],  // Device ID
+                        parts[1],  // Device Type
+                        parts[2],  // Serial Number
+                        LocalDate.now(),  // Default date, replace with actual date from file
+                        LocalDate.now().plusDays(1),  // Default return date
+                        ""  // Email - you may need to add this to your data file
+                    );
+                    bookings.add(booking);
+                }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, 
+                "Error reading bookings: " + e.getMessage(), 
+                "File Error", 
+                JOptionPane.ERROR_MESSAGE);
         }
+        return bookings;
     }
 
-    private void createAndDisplayTable() {
-        tableModel = new DefaultTableModel(new Object[]{"ID", "Name", "Device Type", "Device ID", "Date Booked", "Return Date", "Object Name", "Object ID"}, 0);
+    private List<Booking> filterBookingsByDateRange(LocalDate startDate, LocalDate endDate) {
+        return allBookings.stream()
+            .filter(booking -> 
+                !booking.getDateBooked().isBefore(startDate) && 
+                !booking.getDateBooked().isAfter(endDate))
+            .collect(Collectors.toList());
+    }
 
-        for (ReportManager booking : booked) {
-            //String name = personMap.getOrDefault(booking.getEmail(), "Unknown");
-            //
-            String bookingEmail = booking.getEmail();
-    
-            // Check if the email exists in the teacherMap
-            if (teacherMap.containsKey(bookingEmail)) {
-                // Replace the email in the booking with the teacher's name
-                String teacherName = teacherMap.get(bookingEmail);
-                booking.setEmail(teacherName);  // Assuming there's a setEmail() method
-            }
-            //
-            tableModel.addRow(new Object[]{booking.getId(), name, booking.getDeviceType(), booking.getDeviceId(), booking.getDateBooked().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), booking.getReturnDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), booking.getObjectName(), booking.getObjectId()});
+    private void createTablePanel() {
+        // Create table model
+        String[] columnNames = {"Device ID", "Device Type", "Serial Number", "Date Booked", "Return Date", "Booked By"};
+        tableModel = new DefaultTableModel(columnNames, 0);
+
+        // Populate table with filtered bookings
+        for (Booking booking : filteredBookings) {
+            // Look up teacher name by email
+            String teacherName = booking.getEmail() != null 
+                ? teacherMap.getOrDefault(booking.getEmail(), "Unknown") 
+                : "Unknown";
+
+            tableModel.addRow(new Object[]{
+                booking.getDeviceId(),
+                booking.getDeviceType(),
+                booking.getSerialNumber(),
+                booking.getDateBooked().format(DateTimeFormatter.ISO_LOCAL_DATE),
+                booking.getReturnDate().format(DateTimeFormatter.ISO_LOCAL_DATE),
+                teacherName
+            });
         }
 
+        // Create table and scroll pane
         JTable table = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(table);
         add(scrollPane, BorderLayout.CENTER);
     }
 
-    private void createFilteringControls() {
-        JPanel filterPanel = new JPanel(new FlowLayout());
+    private void createControlPanel() {
+        JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
-        // Device type filter
-        JLabel deviceTypeLabel = new JLabel("Filter by Device Type:");
-        filterPanel.add(deviceTypeLabel);
-
-        List<String> deviceTypes = booked.stream()
-                .map(ReportManager::getDeviceType)
-                .distinct()
-                .collect(Collectors.toList());
+        // Device Type Filter
+        controlPanel.add(new JLabel("Filter by Device Type:"));
+        List<String> deviceTypes = allBookings.stream()
+            .map(Booking::getDeviceType)
+            .distinct()
+            .collect(Collectors.toList());
         deviceTypes.add(0, "All");
-        JComboBox<String> deviceTypeComboBox = new JComboBox<>(deviceTypes.toArray(new String[0]));
+        
+        deviceTypeComboBox = new JComboBox<>(deviceTypes.toArray(new String[0]));
         deviceTypeComboBox.addActionListener(e -> filterByDeviceType());
-        filterPanel.add(deviceTypeComboBox);
+        controlPanel.add(deviceTypeComboBox);
 
-        // Date booked filter
-        JLabel dateBookedLabel = new JLabel("Filter by Date Booked:");
-        filterPanel.add(dateBookedLabel);
+        // Date Filter Button
+        JButton dateFilterButton = new JButton("Filter by Date");
+        dateFilterButton.addActionListener(e -> showDateFilterDialog());
+        controlPanel.add(dateFilterButton);
 
-        JButton dateBookedButton = new JButton("Select Date");
-        dateBookedButton.addActionListener(e -> filterByDateBooked());
-        filterPanel.add(dateBookedButton);
+        add(controlPanel, BorderLayout.NORTH);
+    }
 
-        add(filterPanel, BorderLayout.NORTH);
+    private void createButtonPanel() {
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        
+        // Save Report Button
+        JButton saveButton = new JButton("Save Report");
+        saveButton.addActionListener(e -> saveReport());
+        buttonPanel.add(saveButton);
+
+        // Close Button
+        JButton closeButton = new JButton("Close");
+        closeButton.addActionListener(e -> dispose());
+        buttonPanel.add(closeButton);
+
+        add(buttonPanel, BorderLayout.SOUTH);
     }
 
     private void filterByDeviceType() {
-        JComboBox<String> deviceTypeComboBox = (JComboBox<String>) ((JPanel) getContentPane().getComponent(0)).getComponent(2);
-        String selectedDeviceType = (String) deviceTypeComboBox.getSelectedItem();
-
-        if (selectedDeviceType.equals("All")) {
-            updateTableModel(booked);
+        String selectedType = (String) deviceTypeComboBox.getSelectedItem();
+        
+        if (selectedType == null || selectedType.equals("All")) {
+            updateTableWithBookings(filteredBookings);
         } else {
-            List<ReportManager> filteredBookings = booked.stream()
-                    .filter(booking -> booking.getDeviceType().equals(selectedDeviceType))
-                    .collect(Collectors.toList());
-            updateTableModel(filteredBookings);
+            List<Booking> typeFilteredBookings = filteredBookings.stream()
+                .filter(booking -> booking.getDeviceType().equals(selectedType))
+                .collect(Collectors.toList());
+            updateTableWithBookings(typeFilteredBookings);
         }
     }
 
-    private void filterByDateBooked() {
-        DatePickerDialog dialog = new DatePickerDialog(this);
-        dialog.setVisible(true);
-
-        LocalDate selectedDate = dialog.getSelectedDate();
+    private void showDateFilterDialog() {
+        DatePickerDialog dateDialog = new DatePickerDialog(this);
+        dateDialog.setVisible(true);
+        
+        LocalDate selectedDate = dateDialog.getSelectedDate();
         if (selectedDate != null) {
-            List<ReportManager> filteredBookings = booked.stream()
-                    .filter(booking -> booking.getDateBooked().isEqual(selectedDate))
-                    .collect(Collectors.toList());
-            updateTableModel(filteredBookings);
+            List<Booking> dateFilteredBookings = filteredBookings.stream()
+                .filter(booking -> booking.getDateBooked().isEqual(selectedDate))
+                .collect(Collectors.toList());
+            updateTableWithBookings(dateFilteredBookings);
         }
     }
 
-    private void updateTableModel(List<Booking> bookings) {
+    private void updateTableWithBookings(List<Booking> bookings) {
+        // Clear existing rows
         tableModel.setRowCount(0);
-        for (ReportManager booking : bookings) {
-            String name = personMap.getOrDefault(booking.getEmail(), "Unknown");
-            tableModel.addRow(new Object[]{booking.getId(), name, booking.getDeviceType(), booking.getDeviceId(), booking.getDateBooked().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), booking.getReturnDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), booking.getObjectName(), booking.getObjectId()});
+        
+        // Add filtered bookings to table
+        for (Booking booking : bookings) {
+            // Look up teacher name by email
+            String teacherName = booking.getEmail() != null 
+                ? teacherMap.getOrDefault(booking.getEmail(), "Unknown") 
+                : "Unknown";
+
+            tableModel.addRow(new Object[]{
+                booking.getDeviceId(),
+                booking.getDeviceType(),
+                booking.getSerialNumber(),
+                booking.getDateBooked().format(DateTimeFormatter.ISO_LOCAL_DATE),
+                booking.getReturnDate().format(DateTimeFormatter.ISO_LOCAL_DATE),
+                teacherName
+            });
         }
     }
 
-    public static void main(String[] args) {
-        BookingManager frame = new BookingManager();
-        frame.setVisible(true);
+    private void saveReport() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Save Booking Report");
+        
+        int userSelection = fileChooser.showSaveDialog(this);
+        
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            File fileToSave = fileChooser.getSelectedFile();
+            
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileToSave))) {
+                // Write headers
+                writer.write("Device ID,Device Type,Serial Number,Date Booked,Return Date,Booked By");
+                writer.newLine();
+
+                // Write booking data
+                for (Booking booking : filteredBookings) {
+                    // Look up teacher name by email
+                    String teacherName = booking.getEmail() != null 
+                        ? teacherMap.getOrDefault(booking.getEmail(), "Unknown") 
+                        : "Unknown";
+
+                    writer.write(String.format("%s,%s,%s,%s,%s,%s", 
+                        booking.getDeviceId(),
+                        booking.getDeviceType(),
+                        booking.getSerialNumber(),
+                        booking.getDateBooked().format(DateTimeFormatter.ISO_LOCAL_DATE),
+                        booking.getReturnDate().format(DateTimeFormatter.ISO_LOCAL_DATE),
+                        teacherName
+                    ));
+                    writer.newLine();
+                }
+
+                JOptionPane.showMessageDialog(this, 
+                    "Report saved successfully!", 
+                    "Save Successful", 
+                    JOptionPane.INFORMATION_MESSAGE);
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this, 
+                    "Error saving report: " + ex.getMessage(), 
+                    "Save Error", 
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 
-    private static class ReportManager {
-        private int id;
-        private String email;
-        private String deviceType;
+    // Booking class to represent individual bookings
+    private static class Booking {
         private String deviceId;
+        private String deviceType;
+        private String serialNumber;
         private LocalDate dateBooked;
         private LocalDate returnDate;
-        private String objectName;
-        private String objectId;
+        private String email;
 
-        public ReportManager(email, String deviceType, String deviceId, LocalDate dateBooked, LocalDate returnDate) {
-            this.id = id;
-            this.email = email;
-            this.deviceType = deviceType;
+        public Booking(String deviceId, String deviceType, String serialNumber, 
+                       LocalDate dateBooked, LocalDate returnDate, String email) {
             this.deviceId = deviceId;
+            this.deviceType = deviceType;
+            this.serialNumber = serialNumber;
             this.dateBooked = dateBooked;
             this.returnDate = returnDate;
+            this.email = email;
         }
 
-        public int getId() {
-            return id;
-        }
+        // Getters
+        public String getDeviceId() { return deviceId; }
+        public String getDeviceType() { return deviceType; }
+        public String getSerialNumber() { return serialNumber; }
+        public LocalDate getDateBooked() { return dateBooked; }
+        public LocalDate getReturnDate() { return returnDate; }
+        public String getEmail() { return email; }
+        //public String getName() {return name;}
+    }
 
-        public String getEmail() {
-            return email;
-        }
+    // Main method to launch the ReportManager
+    public static void main(String[] args) {
+        // Assuming you want to show bookings for the current month by default
+        LocalDate endDate = LocalDate.now();
+        LocalDate startDate = endDate.minusMonths(1);
 
-        public String getDeviceType() {
-            return deviceType;
-        }
-
-        public String getDeviceId() {
-            return deviceId;
-        }
-
-        public LocalDate getDateBooked() {
-            return dateBooked;
-        }
-
-        public LocalDate getReturnDate() {
-            return returnDate;
-        }
-
-        public String getObjectName() {
-            return objectName;
-        }
-
-        public String getObjectId() {
-            return objectId;
-        }
+        // Use SwingUtilities to ensure thread safety for Swing components
+        SwingUtilities.invokeLater(() -> {
+            ReportManager frame = new ReportManager(startDate, endDate);
+            frame.setVisible(true);
+        });
     }
 }

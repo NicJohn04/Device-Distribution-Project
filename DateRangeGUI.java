@@ -4,15 +4,24 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
+import java.util.logging.Logger;
+
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class DateRangeGUI extends JFrame {
-    //private static final long serialVersionUID = 1L;
+    private static final Logger LOGGER = Logger.getLogger(DateRangeGUI.class.getName());
+
+
     private JTextField startDate, endDate;
     private JComboBox<String> dateRangeComboBox;
     private JPanel middlePanel;
@@ -50,32 +59,26 @@ public class DateRangeGUI extends JFrame {
         middlePanel.add(endDate);
 
         JPanel bottomPanel = new JPanel();
-        JButton submitButton = new JButton("Submit");
+        JButton submitButton = new JButton("Generate Report");
         submitButton.addActionListener(new SubmitButtonListener());
         bottomPanel.add(submitButton);
 
         middlePanel.setVisible(false);
 
+        mainPanel.add(middlePanel, BorderLayout.CENTER);
         mainPanel.add(bottomPanel, BorderLayout.SOUTH);
 
         add(mainPanel);
     }
 
-    private class ShowCustomActionListener implements ActionListener
-    {
-        public void actionPerformed(ActionEvent e)
-        {
+    private class ShowCustomActionListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
             String selectedOption = (String) dateRangeComboBox.getSelectedItem();
-            if (!selectedOption.equals("Custom")) {
-                middlePanel.setVisible(false);
-            } else {
-                middlePanel.setVisible(true);
-            }
+            middlePanel.setVisible(selectedOption.equals("Custom"));
         }
     }
 
-    private void setDates() 
-    {
+    private void setDates() {
         String selectedOption = (String) dateRangeComboBox.getSelectedItem();
         LocalDate now = LocalDate.now();
 
@@ -99,25 +102,61 @@ public class DateRangeGUI extends JFrame {
             case "custom":
                 middlePanel.setVisible(true);
                 break;
-            default:
-                throw new IllegalArgumentException("Invalid date range option.");
         }
     }
 
-
-    private class SubmitButtonListener implements ActionListener
-    {
-        public void actionPerformed(ActionEvent e)
-        {
-            //Report report = new Report(getName(), getName(), getName(), getName(), getTitle(), getWarningString(), getName())
+    private class SubmitButtonListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            // Set dates if not already set
+            if (startDate.getText().isEmpty() || endDate.getText().isEmpty()) {
+                setDates();
+            }
+            
+            try {
+                // Parse start and end dates
+                LocalDate startLocalDate = LocalDate.parse(startDate.getText(), 
+                    DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+                LocalDate endLocalDate = LocalDate.parse(endDate.getText(), 
+                    DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+                
+                // Validate date range
+                if (startLocalDate.isAfter(endLocalDate)) {
+                    JOptionPane.showMessageDialog(DateRangeGUI.this, 
+                        "Start date must be before or equal to end date.", 
+                        "Invalid Date Range", 
+                        JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                
+                // Validate that date range is not more than 1 month
+                if (ChronoUnit.MONTHS.between(startLocalDate, endLocalDate) > 1) {
+                    JOptionPane.showMessageDialog(DateRangeGUI.this, 
+                        "Date range cannot exceed 1 month.", 
+                        "Date Range Exceeded", 
+                        JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                
+                // Open Report Manager with the selected date range
+                ReportManager reportManager = new ReportManager(startLocalDate, endLocalDate);
+                reportManager.setVisible(true);
+                
+            } catch (DateTimeParseException ex) {
+                JOptionPane.showMessageDialog(DateRangeGUI.this, 
+                    "Invalid date format. Please use dd-MM-yyyy.", 
+                    "Date Format Error", 
+                    JOptionPane.ERROR_MESSAGE);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(DateRangeGUI.this, 
+                    "An error occurred: " + ex.getMessage(), 
+                    "Error", 
+                    JOptionPane.ERROR_MESSAGE);
+            }
         }
-
     }
-
-
 
     public static void main(String[] args) {
-        DateRangeGUI gui = new DateRangeGUI();
-        gui.setVisible(true);
+        JFrame DateRangeGUI = new DateRangeGUI();
+        DateRangeGUI.setVisible(true);
     }
 }

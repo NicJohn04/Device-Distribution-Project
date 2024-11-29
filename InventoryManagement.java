@@ -75,7 +75,7 @@ public class InventoryManagement {
     private List<Equipment> inventory;
 
     // File to save the inventory data
-    private static final String FILE_PATH = "C://Users//hriet//Downloads//Device-Distribution-Project-main//Device-Distribution-Project-main//Java Project//src//Equipment.dat";
+    private static final String FILE_PATH = "C:\\Users\\hriet\\OneDrive - The University of the West Indies, Mona Campus\\Documents\\School work\\UWI COURSES\\COMP2140\\Device-Distribution-Project-main latest version\\Device-Distribution-Project-main\\Java Software Project\\src\\Equipment.dat";
 
     public InventoryManagement() {
         inventory = new ArrayList<>();

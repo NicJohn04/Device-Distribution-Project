@@ -97,11 +97,20 @@ public class MainMenuFrame extends JFrame{
                 teacherManagementGUI.setVisible(true);
               }  
             });
+
             JButton ReportGenButton = new JButton("Report Creation"); // this is where you link the Report creation option
+            ReportGenButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e){
+                    DateRangeGUI date = new DateRangeGUI();
+                    date.setVisible(true);
+                    
+                }
+            });
+
             JButton InventoryButton = new JButton("Inventory Management"); // this is where you link the Inventory  Managment
             InventoryButton.addActionListener(new ActionListener(){
                 public void actionPerformed(ActionEvent e){
-                    new InventoryManagementGUI();
+                    new InventoryManagement();
                 }
             });
 
@@ -210,7 +219,7 @@ public class MainMenuFrame extends JFrame{
 
 
     private static boolean fileCheck(String mail)throws IOException{
-        try (FileReader fileChecker = new FileReader("C:\\Users\\starg\\Documents\\Device-Distribution-Project-main\\Java Project\\src\\teachers.csv");
+        try (FileReader fileChecker = new FileReader("C:\\Users\\hriet\\OneDrive - The University of the West Indies, Mona Campus\\Documents\\School work\\UWI COURSES\\COMP2140\\Device-Distribution-Project-main latest version\\Device-Distribution-Project-main\\Java Software Project\\src\\teachers.csv");
         BufferedReader fileReader = new BufferedReader(fileChecker)){
             String readFile = fileReader.readLine();
             while (readFile != null) {

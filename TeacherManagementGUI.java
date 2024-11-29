@@ -359,7 +359,7 @@ public class TeacherManagementGUI extends JFrame {
             row.add(teacher.getTeacherId());
             row.add(teacher.getName());
             row.add(teacher.getEmail());
-            row.add(teacher.getPasswordHash());
+            row.add(teacher.getActualPassword());
             row.add(teacher.getContactNumber());
             row.add(teacher.getRole());
             row.add(teacher.getStatus());

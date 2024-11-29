@@ -20,6 +20,7 @@ public class Teacher implements Serializable {
     private LocalDateTime dateCreated;
     private LocalDateTime lastUpdated;
     private String passwordHash;
+    private String actualPassword;
 
     // Constructor function 
     public Teacher(int teacherId, String name, String email, String contactNumber, String role, String password) {
@@ -31,6 +32,7 @@ public class Teacher implements Serializable {
         this.status = TeacherStatus.ACTIVE;
         this.dateCreated = LocalDateTime.now();
         this.lastUpdated = LocalDateTime.now();
+        this.actualPassword = password;
         this.passwordHash = hashPassword(password);
     }
 
@@ -39,13 +41,14 @@ public class Teacher implements Serializable {
 
     //Method for checking password
     public boolean checkPassword(String inputPassword){
-        return this.passwordHash.equals(inputPassword);
+        return this.passwordHash.equals(hashPassword(inputPassword));
         //return this.passwordHash.equals(hashPassword(inputPassword));
     }
 
     //change password
     public void changePassword(String newPassword){
-        this.passwordHash = newPassword;
+        this.passwordHash = hashPassword(newPassword);
+        this.actualPassword = newPassword;
         //this.passwordHash = hashPassword(newPassword);
         updateLastUpdated();
     }
@@ -53,16 +56,16 @@ public class Teacher implements Serializable {
 
     //Helper method that will hash passwords
     private String hashPassword(String password){
-        return password;
-        //try{
-          //  MessageDigest msgdgt = MessageDigest.getInstance("SHA-256");
-            //byte[] hasedBytes = msgdgt.digest(password.getBytes());
-            //return Base64.getEncoder().encodeToString(hasedBytes); 
-        //}
-        //catch (NoSuchAlgorithmException e){
-            //Fallback to a simple and less secure method if SHA-256 is not available.
-          //  return String.valueOf(password.hashCode());
-        //}
+        
+        try{
+            MessageDigest msgdgt = MessageDigest.getInstance("SHA-256");
+            byte[] hasedBytes = msgdgt.digest(password.getBytes());
+            return Base64.getEncoder().encodeToString(hasedBytes);
+            //return password;
+        }
+        catch (Exception e){
+            return String.valueOf(password.hashCode());
+        }
     }
 
 
@@ -102,6 +105,10 @@ public class Teacher implements Serializable {
 
     public String getPasswordHash() {
         return passwordHash;
+    }
+
+    public String getActualPassword(){
+        return actualPassword;
     }
 
     // Setter functions
