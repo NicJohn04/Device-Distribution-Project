@@ -23,7 +23,8 @@ class Equipment {
     private String description;
 
     // Constructor
-    public Equipment(String equipmentId, String equipmentName, String serialNumber, EquipmentStatus status, String description) {
+    public Equipment(String equipmentId, String equipmentName, String serialNumber, EquipmentStatus status,
+            String description) {
         this.equipmentId = equipmentId;
         this.equipmentName = equipmentName;
         this.serialNumber = serialNumber;
@@ -59,7 +60,8 @@ class Equipment {
 
     @Override
     public String toString() {
-        return "ID: " + equipmentId + ", Name: " + equipmentName + ", Serial: " + serialNumber + ", Status: " + status + ", Description: " + description;
+        return "ID: " + equipmentId + ", Name: " + equipmentName + ", Serial: " + serialNumber + ", Status: " + status
+                + ", Description: " + description;
     }
 }
 
@@ -75,7 +77,7 @@ public class InventoryManagement {
     private List<Equipment> inventory;
 
     // File to save the inventory data
-    private static final String FILE_PATH = "C://Users//daena//Downloads//Device-Distribution-Project-main latest version//Device-Distribution-Project-main latest version//Device-Distribution-Project-main//Java Software Project//src//Equipment.dat";
+    private static final String FILE_PATH = "C:/Users/daena/Downloads/Device-Distribution-Project-main (1)/Device-Distribution-Project-main/Equipment.dat";
 
     public InventoryManagement() {
         inventory = new ArrayList<>();
@@ -120,7 +122,7 @@ public class InventoryManagement {
         buttonPanel.add(removeButton);
 
         // Table for displaying inventory
-        String[] columnNames = {"Equipment ID", "Equipment Name", "Serial Number", "Status", "Description"};
+        String[] columnNames = { "Equipment ID", "Equipment Name", "Serial Number", "Status", "Description" };
         tableModel = new DefaultTableModel(columnNames, 0);
         inventoryTable = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(inventoryTable);
@@ -140,7 +142,8 @@ public class InventoryManagement {
                 String description = descriptionField.getText();
                 EquipmentStatus status = (EquipmentStatus) statusComboBox.getSelectedItem();
 
-                if (!equipmentId.isEmpty() && !equipmentName.isEmpty() && !serialNumber.isEmpty() && !description.isEmpty() && status != null) {
+                if (!equipmentId.isEmpty() && !equipmentName.isEmpty() && !serialNumber.isEmpty()
+                        && !description.isEmpty() && status != null) {
                     addEquipment(equipmentId, equipmentName, serialNumber, status, description);
                     clearFields();
                     saveInventoryToFile(); // Save to file after adding
@@ -184,12 +187,13 @@ public class InventoryManagement {
     }
 
     // Method to add equipment
-    public void addEquipment(String equipmentId, String equipmentName, String serialNumber, EquipmentStatus status, String description) {
+    public void addEquipment(String equipmentId, String equipmentName, String serialNumber, EquipmentStatus status,
+            String description) {
         Equipment equipment = new Equipment(equipmentId, equipmentName, serialNumber, status, description);
         inventory.add(equipment);
 
         // Add the new equipment to the table model
-        tableModel.addRow(new Object[]{equipmentId, equipmentName, serialNumber, status, description});
+        tableModel.addRow(new Object[] { equipmentId, equipmentName, serialNumber, status, description });
 
         JOptionPane.showMessageDialog(frame, "Equipment added: " + equipment);
     }
