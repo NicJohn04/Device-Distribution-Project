@@ -1,0 +1,94 @@
+import java.time.LocalDateTime;
+
+public class Teacher {
+    // Enum for Teacher Status
+    public enum TeacherStatus {
+        ACTIVE, INACTIVE
+    }
+
+    // Teacher attributes
+    private int teacherId;
+    private String name;
+    private String email;
+    private String contactNumber;
+    private String role;
+    private TeacherStatus status;
+    private LocalDateTime dateCreated;
+    private LocalDateTime lastUpdated;
+
+    // Constructor function 
+    public Teacher(int teacherId, String name, String email, String contactNumber, String role) {
+        this.teacherId = teacherId;
+        this.name = name;
+        this.email = email;
+        this.contactNumber = contactNumber;
+        this.role = role;
+        this.status = TeacherStatus.ACTIVE;
+        this.dateCreated = LocalDateTime.now();
+        this.lastUpdated = LocalDateTime.now();
+    }
+
+    // Getter functions 
+    public int getTeacherId() {
+        return teacherId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getContactNumber() {
+        return contactNumber;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public TeacherStatus getStatus() {
+        return status;
+    }
+
+    public LocalDateTime getDateCreated() {
+        return dateCreated;
+    }
+
+    public LocalDateTime getLastUpdated() {
+        return lastUpdated;
+    }
+
+    // Setter functions
+    public void setName(String name) {
+        this.name = name;
+        updateLastUpdated();
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+        updateLastUpdated();
+    }
+
+    public void setContactNumber(String contactNumber) {
+        this.contactNumber = contactNumber;
+        updateLastUpdated();
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+        updateLastUpdated();
+    }
+
+    public void setStatus(TeacherStatus status) {
+        this.status = status;
+        updateLastUpdated();
+    }
+
+    // Helper method to update lastUpdated timestamp
+    private void updateLastUpdated() {
+        this.lastUpdated = LocalDateTime.now();
+    }
+}

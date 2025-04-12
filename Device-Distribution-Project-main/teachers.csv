@@ -1,0 +1,6 @@
+TeacherId,Name,Email,Password,ContactNumber,Role,Status,DateCreated,LastUpdated
+12345678,Walter White,walterwhite@gmail.com,terminator,876-313-6672,Teacher,ACTIVE,2024-11-29 07:38:32,2024-11-29 07:38:32
+13645622,Terry Bot,terrybot@gmail.com,terrydom,876-146-8434,Lab Administrator,ACTIVE,2024-11-29 07:39:18,2024-11-29 07:39:18
+17518571,Markus Galberg,markusgalberg@gmail.com,marketdominator,876-246-2353,Teacher,ACTIVE,2024-11-29 07:44:27,2024-11-29 07:44:27
+24681011,Daena Crosby,daenacrosby1@gmail.com,D@3n@,8767969414,Lab Administrator,ACTIVE,2024-11-29 10:25:03,2024-11-29 10:25:03
+12312312,John Doe,doe2@gmail.com,D03,87698798076,Teacher,ACTIVE,2024-11-29 10:25:03,2024-11-29 10:25:03
