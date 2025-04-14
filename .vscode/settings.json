@@ -1,3 +1,13 @@
 {
-    "java.debug.settings.onBuildFailureProceed": true
+    "java.debug.settings.onBuildFailureProceed": true,
+    "java.project.sourcePaths": [
+        "Device-Distribution-Project-main"
+    ],
+    "java.project.referencedLibraries": [
+        "Device-Distribution-Project-main\\jar_files\\activation-1.1.1.jar",
+        "Device-Distribution-Project-main\\jar_files\\jackson-annotations-2.18.1.jar",
+        "Device-Distribution-Project-main\\jar_files\\jackson-core-2.18.1.jar",
+        "Device-Distribution-Project-main\\jar_files\\jackson-databind-2.18.1.jar",
+        "Device-Distribution-Project-main\\jar_files\\javax.mail.jar"
+    ]
 }

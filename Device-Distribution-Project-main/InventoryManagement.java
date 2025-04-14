@@ -7,6 +7,7 @@ import java.util.List;
 import java.io.FileWriter;
 import java.io.File;
 import java.io.IOException;
+import java.util.Scanner;
 
 enum EquipmentStatus {
     FUNCTIONAL,
@@ -182,6 +183,9 @@ public class InventoryManagement {
             }
         });
 
+        // Load inventory from file
+        loadInventoryFromFile();
+
         // Show the frame
         frame.setVisible(true);
     }
@@ -251,6 +255,45 @@ public class InventoryManagement {
             }
         } catch (IOException e) {
             JOptionPane.showMessageDialog(frame, "Error saving inventory to file: " + e.getMessage());
+        }
+    }
+
+    // Method to load the inventory from a file
+    public void loadInventoryFromFile() {
+        File file = new File(FILE_PATH);
+        if (!file.exists()) {
+            // If the file doesn't exist, show a warning and return
+            JOptionPane.showMessageDialog(frame, "Inventory file not found. Starting with an empty inventory.",
+                    "Warning",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        try (Scanner scanner = new Scanner(file)) {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                String[] parts = line.split(","); // Split the line by commas
+                if (parts.length == 5) { // Ensure the line has all required fields
+                    String equipmentId = parts[0].trim();
+                    String equipmentName = parts[1].trim();
+                    String serialNumber = parts[2].trim();
+                    EquipmentStatus status = EquipmentStatus.valueOf(parts[3].trim());
+                    String description = parts[4].trim();
+
+                    // Create an Equipment object and add it to the inventory
+                    Equipment equipment = new Equipment(equipmentId, equipmentName, serialNumber, status, description);
+                    inventory.add(equipment);
+
+                    // Add the equipment to the table model
+                    tableModel.addRow(new Object[] { equipmentId, equipmentName, serialNumber, status, description });
+                }
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(frame, "Error loading inventory from file: " + e.getMessage(), "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        } catch (IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(frame, "Error parsing inventory file. Please check the file format.", "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 

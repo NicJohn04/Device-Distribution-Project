@@ -5,3 +5,6 @@ TeacherId,Name,Email,Password,ContactNumber,Role,Status,DateCreated,LastUpdated
 24681011,Daena Crosby,daenacrosby1@gmail.com,D@3n@,8767969414,Lab Administrator,ACTIVE,2024-11-29 10:25:03,2024-11-29 10:25:03
 12312312,John Doe,doe2@gmail.com,D03,87698798076,Teacher,ACTIVE,2024-11-29 10:25:03,2024-11-29 10:25:03
 36912151,Daena Crosby,daenacrosby1@gmail.com,D@3n@2003,876-349-6075,Teacher,ACTIVE,2025-04-13 19:48:41,2025-04-13 19:48:41
+98989898,janet dane,,jane,,,INACTIVE,2025-04-14 10:08:03,2025-04-14 10:09:22
+65656565,,,hector,675-8493,,INACTIVE,2025-04-14 10:29:54,2025-04-14 10:30:23
+1234,Hect,Wills,hector,,,INACTIVE,2025-04-14 10:42:12,2025-04-14 10:42:56
