@@ -443,28 +443,55 @@ public class MainMenuFrame extends JFrame {
 
             JFrame mainFrame_teach = new JFrame("Teacher Dashboard");
             mainFrame_teach.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            mainFrame_teach.setContentPane(mainPanel);
             mainFrame_teach.setPreferredSize(new Dimension(800, 600)); // Set preferred size for mainFrame_teach
-            mainFrame_teach.setVisible(true);
 
-            JButton bookEquiButton = new JButton("Book Equipment");
+            // Add Image
+            JLabel imageLabel = new JLabel(new ImageIcon(
+                    new ImageIcon(
+                            "C://Users//daena//Downloads//Device-Distribution-Project-main (1)//Device-Distribution-Project-main//excelsior_image(4).jpg")
+                            .getImage()
+                            .getScaledInstance(600, 300, Image.SCALE_SMOOTH))); // Resize the image
+            imageLabel.setHorizontalAlignment(JLabel.CENTER);
+            imageLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0)); // Adjust spacing below the image
+            mainPanel.add(imageLabel, BorderLayout.CENTER);
+
+            // Add Book Equipment Button
+            JButton bookEquiButton = new JButton("Book Equipment") {
+                @Override
+                protected void paintComponent(Graphics g) {
+                    super.paintComponent(g);
+                    Graphics2D g2 = (Graphics2D) g;
+                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g2.setColor(Color.decode("#FEE400")); // Yellow color
+                    g2.fillRoundRect(0, 0, getWidth(), getHeight(), 30, 30); // Rounded rectangle
+                    super.paintComponent(g2);
+                }
+            };
+            bookEquiButton.setFont(new Font("Times New Roman", Font.PLAIN, 16)); // Changed to Times New Roman
+            bookEquiButton.setForeground(Color.BLACK); // Text color
+            bookEquiButton.setOpaque(false);
+            bookEquiButton.setContentAreaFilled(false);
+            bookEquiButton.setBorderPainted(false);
             bookEquiButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    new Booking(mail);
+                    new Booking(mail); // Open the Booking frame
                 }
             });
 
-            JPanel buttonPanel_t = new JPanel();
-            buttonPanel_t.setBackground(Color.WHITE); // Set background color to white
-            buttonPanel_t.add(bookEquiButton);
+            JPanel buttonPanel = new JPanel();
+            buttonPanel.setBackground(Color.WHITE); // Set background color to white
+            buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0)); // Adjust spacing above the button
+            buttonPanel.add(bookEquiButton);
 
-            mainFrame_teach.getContentPane().add(buttonPanel_t, BorderLayout.NORTH);
+            mainPanel.add(buttonPanel, BorderLayout.SOUTH); // Place the button below the image
+
+            mainFrame_teach.add(mainPanel);
             mainFrame_teach.pack();
             mainFrame_teach.setLocationRelativeTo(null);
             mainFrame_teach.setVisible(true);
 
         } else {
-            JOptionPane.showMessageDialog(teacherFrame, "Invalid password. please try again", "Login Error",
+            JOptionPane.showMessageDialog(teacherFrame, "Invalid password. Please try again.", "Login Error",
                     JOptionPane.ERROR_MESSAGE);
         }
     }

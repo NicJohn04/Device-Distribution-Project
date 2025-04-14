@@ -30,8 +30,8 @@ public class Booking extends JFrame {
         setPreferredSize(new Dimension(800, 600));
         setLayout(new BorderLayout());
 
-        final String FILE_PATH_1 = "Device-Distribution-Project-main//Equipment.dat";
-        final String FILE_PATH_2 = "Device-Distribution-Project-main//BookedEquipment.dat";
+        final String FILE_PATH_1 = "C://Users//daena//Downloads//Device-Distribution-Project-main (1)//Device-Distribution-Project-main//Equipment.dat";
+        final String FILE_PATH_2 = "C://Users//daena//Downloads//Device-Distribution-Project-main (1)//Device-Distribution-Project-main//BookedEquipment.dat";
 
         JFrame BookingFrame = new JFrame("Book Equipment"); // the frame of booking
         BookingFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // seting the frame to close once you click on
@@ -40,7 +40,7 @@ public class Booking extends JFrame {
         BookingFrame.setLayout(new BorderLayout());
 
         String[] columnNames = { "Select", "Equipment ID", "Equipment Name", "Serial Number", "Status", "Description",
-                "Bookin Time", "Booking Status" }; // column names for the table
+                "Booking Time", "Booking Status" }; // column names for the table
 
         Object[][] data = loadDataFromFile(FILE_PATH_1); // load data from file to store in a veriable which builds the
                                                          // table
@@ -335,7 +335,7 @@ public class Booking extends JFrame {
         tbookedField = new JTextField();
         inputPanel.add(tbookedField);
 
-        inputPanel.add(new JLabel("How long equipment was booked for"));
+        inputPanel.add(new JLabel("How long equipment was booked for (mins)"));
         timeBookedField = new JTextField();
         inputPanel.add(timeBookedField);
 
